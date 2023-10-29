@@ -1,118 +1,59 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
+import {
+  Canvas,
+  Paint,
+  Path,
+  Skia,
+  SweepGradient,
+  useTiming,
+  vec,
+} from '@shopify/react-native-skia';
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+import {SafeAreaView} from 'react-native';
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const size = 300;
+  const strokeWidth = 15;
+  const path = Skia.Path.Make();
+  path.addArc({x: 50, y: 50, width: size, height: size}, 0, 360);
+  const red = '#ff0000';
+  const blue = '#006eff';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const start = useTiming(
+    {
+      from: 1,
+      to: 0,
+      loop: true,
+      yoyo: true,
+    },
+    {duration: 1200},
+  );
+
+  const end = useTiming(
+    {
+      from: 0,
+      to: 1,
+      yoyo: true,
+      loop: true,
+    },
+    {duration: 1200},
+  );
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <SafeAreaView style={{flex: 1}}>
+      <Canvas style={{flex: 1}}>
+        <Path path={path} color="transparent" end={end} start={start}>
+          <Paint style="stroke" strokeWidth={11} strokeCap={'round'}>
+            <SweepGradient
+              c={vec(size / 2, size / 2 + strokeWidth)}
+              colors={[blue, red, blue]}
+              start={0}
+              end={360}
+            />
+          </Paint>
+        </Path>
+      </Canvas>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
